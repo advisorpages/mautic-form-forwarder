@@ -1,5 +1,5 @@
-<?php
-  header('Access-Control-Allow-Origin: *');
+<?php                                                                                                                                                                                  
+  header('Access-Control-Allow-Origin: *');                       
   header('Content-Type: application/json');
 
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -9,6 +9,8 @@
   }
 
   $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+  $invitedBy = filter_input(INPUT_POST, 'invited_by', FILTER_SANITIZE_SPECIAL_CHARS);
+
   if (!$email) {
       http_response_code(400);
       echo json_encode(['error' => 'Invalid email']);
@@ -18,7 +20,11 @@
   // Get Mautic URL from environment variable
   $mauticUrl = getenv('MAUTIC_URL') ?: 'http://localhost:8080/form/submit';
 
-  $postData = http_build_query(['email' => $email]);
+  // Prepare form data for Mautic
+  $postData = http_build_query([
+      'email' => $email,
+      'invited_by' => $invitedBy ?: '',  // Include invited_by field
+  ]);
 
   $context = stream_context_create([
       'http' => [

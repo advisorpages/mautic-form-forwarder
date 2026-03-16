@@ -1,5 +1,4 @@
 <?php
-  // index.php - Put this in a new repo
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
 
@@ -16,13 +15,10 @@
       exit;
   }
 
-  // Your Tailscale Mautic URL
-  $mauticUrl = 'http://100.x.x.x:8080/form/submit'; // Use your Tailscale IP
+  // Get Mautic URL from environment variable
+  $mauticUrl = getenv('MAUTIC_URL') ?: 'http://localhost:8080/form/submit';
 
-  $postData = http_build_query([
-      'email' => $email,
-      'formId' => 1 // Your Mautic form ID
-  ]);
+  $postData = http_build_query(['email' => $email]);
 
   $context = stream_context_create([
       'http' => [
